@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Controlled Input Null Value</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    // Specifying the value prop on a controlled component prevents the user from changing the input.
+    ReactDOM.render(<input value="hi"/>, document.getElementById('root'));
+
+    // If you’ve specified a value but the input is still editable, you may have accidentally set value to undefined or null.
+    setTimeout(function () {
+        ReactDOM.render(<input value={null}/>, document.getElementById('root'));
+    }, 1000);
+</script>
+</body>
+</html>
