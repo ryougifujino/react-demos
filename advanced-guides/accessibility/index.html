@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Semantic HTML</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const Fragment = React.Fragment;
+
+    // <> is the short syntax of Fragment
+    function ListItem({item}) {
+        return (
+            <>
+                <dt>{item.term}</dt>
+                <dd>{item.description}</dd>
+            </>
+        );
+    }
+
+    function Glossary(props) {
+        return (
+            <dl>
+                {props.items.map(item => (
+                    <ListItem item={item} key={item.id}/>
+                ))}
+            </dl>
+        );
+    }
+
+    const items = [
+        {
+            id: 1,
+            term: '5G',
+            description: '5G is an advanced wireless technology.'
+        },
+        {
+            id: 2,
+            term: 'IP',
+            description: 'The Internet Protocol (IP) is the principal communications protocol in the' +
+                ' Internet protocol suite for relaying datagrams across network boundaries.'
+        }
+    ];
+
+    ReactDOM.render(<Glossary items={items}/>, document.getElementById('root'));
+</script>
+</body>
+</html>
