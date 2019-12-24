@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Focus Control - Programmatically managing focus</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    function CustomTextInput(props) {
+        return (
+            <div>
+                <input ref={props.inputRef}/>
+            </div>
+        );
+    }
+
+    class Parent extends React.Component {
+        constructor(props) {
+            super(props);
+            this.inputElement = React.createRef();
+        }
+
+        render() {
+            return (
+                <div>
+                    <CustomTextInput inputRef={this.inputElement}/>
+                    <button onClick={() => this.inputElement.current.focus()}>Focus</button>
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(<Parent/>, document.getElementById('root'));
+</script>
+</body>
+</html>
