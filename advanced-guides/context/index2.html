@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Before You Use Context</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+
+    function Page(props) {
+        // This inversion of control can make your code cleaner in many cases by reducing the amount
+        // of props you need to pass through your application and giving more control to the root components.
+        const userLink = <a href={props.link}>{props.name}</a>;
+        return <PageLayout userLink={userLink}/>
+    }
+
+    // The intermediate components don’t need to know about the name or link props
+    function PageLayout(props) {
+        return <NavigationBar userLink={props.userLink}/>;
+    }
+
+    function NavigationBar(props) {
+        return props.userLink;
+    }
+
+    ReactDOM.render(<Page name="Google" link="https://google.com"/>, document.getElementById('root'));
+</script>
+</body>
+</html>
