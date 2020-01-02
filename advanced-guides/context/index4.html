@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API - Context.Provider</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+
+    const ThemeContext = React.createContext('light');
+
+    class App extends React.Component {
+
+        render() {
+            return (
+                <ThemeContext.Provider value="dark">
+                    <ThemeContext.Provider value="darker">
+                        <Toolbar/>
+                        <Action/>
+                    </ThemeContext.Provider>
+                </ThemeContext.Provider>
+            );
+        }
+    }
+
+    function Toolbar(props) {
+        return (
+            <div>
+                <ThemedButton/>
+            </div>
+        );
+    }
+
+    function Action(props) {
+        return (
+            <div>
+                <ThemedButton/>
+            </div>
+        );
+    }
+
+    class ThemedButton extends React.Component {
+        static contextType = ThemeContext;
+
+        render() {
+            return <button>{this.context}</button>;
+        }
+    }
+
+    ReactDOM.render(<App/>, document.getElementById('root'));
+</script>
+</body>
+</html>
