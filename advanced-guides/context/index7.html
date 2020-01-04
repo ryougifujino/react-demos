@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Examples - Consuming Multiple Contexts</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+
+    // Theme context, default to light theme
+    const ThemeContext = React.createContext('light');
+
+    // Signed-in user context
+    const UserContext = React.createContext({
+        name: 'Guest',
+    });
+
+    class App extends React.Component {
+        render() {
+            const {signedInUser, theme} = this.props;
+
+            // App component that provides initial context values
+            return (
+                <ThemeContext.Provider value={theme}>
+                    <UserContext.Provider value={signedInUser}>
+                        <Layout />
+                    </UserContext.Provider>
+                </ThemeContext.Provider>
+            );
+        }
+    }
+
+    function Layout() {
+        return (
+            <div>
+                <Sidebar />
+                <Content />
+            </div>
+        );
+    }
+
+    function Sidebar() {
+        return <ContextConsumerWrap component={ProfileSidebar}/>;
+    }
+
+    // A component may consume multiple contexts
+    function Content() {
+        return <ContextConsumerWrap component={ProfilePage}/>;
+    }
+
+    function ContextConsumerWrap(props) {
+        return (
+            <ThemeContext.Consumer>
+                {theme => (
+                    <UserContext.Consumer>
+                        {user => props.component({theme, user})}
+                    </UserContext.Consumer>
+                )}
+            </ThemeContext.Consumer>
+        );
+    }
+
+    function ProfileSidebar(props) {
+        return (<div>{props.user} + {props.theme}</div>)
+    }
+
+    function ProfilePage(props) {
+        return (
+            <ul>
+                <li>user: {props.user}</li>
+                <li>theme: {props.theme}</li>
+            </ul>
+        );
+    }
+
+    ReactDOM.render(<App signedInUser="Frank" theme="dark"/>, document.getElementById('root'));
+</script>
+</body>
+</html>
