@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Examples - Dynamic Context</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const themes = {
+        light: {
+            foreground: '#000000',
+            background: '#eeeeee',
+        },
+        dark: {
+            foreground: '#ffffff',
+            background: '#222222',
+        },
+    };
+
+    const ThemeContext = React.createContext(
+        themes.dark // default value
+    );
+
+    // ---
+
+    class ThemedButton extends React.Component {
+        render() {
+            const props = this.props;
+            const theme = this.context;
+            return (
+                <button
+                    {...props}
+                    style={{backgroundColor: theme.background, color: 'white'}}
+                />
+            );
+        }
+    }
+    ThemedButton.contextType = ThemeContext;
+
+    // ---
+
+    // An intermediate component that uses the ThemedButton
+    function Toolbar(props) {
+        return (
+            <ThemedButton onClick={props.changeTheme}>
+                Change Theme
+            </ThemedButton>
+        );
+    }
+
+    class App extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                theme: themes.light,
+            };
+
+            this.toggleTheme = () => {
+                this.setState(state => ({
+                    theme:
+                        state.theme === themes.dark
+                            ? themes.light
+                            : themes.dark,
+                }));
+            };
+        }
+
+        render() {
+            // The ThemedButton button inside the ThemeProvider
+            // uses the theme from state while the one outside uses
+            // the default dark theme
+            return (
+                <div>
+                    <ThemeContext.Provider value={this.state.theme}>
+                        <Toolbar changeTheme={this.toggleTheme} />
+                    </ThemeContext.Provider>
+                    <section>
+                        <ThemedButton>Default Theme</ThemedButton>
+                    </section>
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+</script>
+</body>
+</html>
