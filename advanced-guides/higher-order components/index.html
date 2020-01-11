@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Use HOCs For Cross-Cutting Concerns</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+
+    function withSubscription(WrappedComponent, selectData, DataSource) {
+        return class extends React.Component {
+            constructor(props) {
+                super(props);
+                this.handleChange = this.handleChange.bind(this);
+                this.state = {
+                    data: selectData(DataSource, props)
+                };
+            }
+
+            componentDidMount() {
+                DataSource.addChangeListener(this.handleChange);
+            }
+
+            componentWillUnmount() {
+                DataSource.removeChangeListener(this.handleChange);
+            }
+
+            handleChange() {
+                this.setState({
+                    data: selectData(DataSource, this.props)
+                });
+            }
+
+            render() {
+                return <WrappedComponent {...this.props} data={this.state.data}/>;
+            }
+        };
+    }
+
+    const DataSource = {
+        getComments() {
+            return [
+                "Hello",
+                "Halo",
+                "你好"
+            ];
+        },
+        addChangeListener() {
+            // ...
+        },
+        removeChangeListener() {
+            // ...
+        }
+    };
+
+    function CommentList(props) {
+        return (
+            <ul>
+                {props.data.map((comment, index) => (
+                    <li key={index}>{comment}</li>
+                ))}
+            </ul>
+        );
+    }
+
+    const CommentListWithSubscription = withSubscription(CommentList, (DataSource, props) => DataSource.getComments(), DataSource);
+
+    class App extends React.Component {
+        constructor(props) {
+            super(props);
+        }
+
+        render() {
+            return <CommentListWithSubscription />;
+        }
+    }
+
+    ReactDOM.render(<App/>, document.getElementById('root'));
+</script>
+</body>
+</html>
