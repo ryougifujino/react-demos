@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>shouldComponentUpdate In Action</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+
+    class ListOfWords extends React.PureComponent {
+        render() {
+            return <div>{this.props.words.join(',')}</div>;
+        }
+    }
+
+    class WordAdder extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                words: ['word']
+            };
+        }
+
+        handleClick = () => {
+            /* UI won't update
+            const words = this.state.words;
+            words.push('word');
+            this.setState({words: words});
+            */
+            this.setState(state => ({
+                words: [...state.words, 'word']
+            }));
+        };
+
+        render() {
+            return (
+                <div>
+                    <button onClick={this.handleClick}>Add Word</button>
+                    <ListOfWords words={this.state.words}/>
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(<WordAdder/>, document.getElementById('root'));
+</script>
+</body>
+</html>
