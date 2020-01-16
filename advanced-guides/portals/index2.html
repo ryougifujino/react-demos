@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Bubbling Through Portals</title>
+</head>
+<body>
+<div id="root"></div>
+<div id="modal"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const root = document.getElementById('root');
+    const modal = document.getElementById('modal');
+
+    class Modal extends React.Component {
+        constructor(props) {
+            super(props);
+            this.el = document.createElement('div');
+        }
+
+        componentDidMount() {
+            modal.appendChild(this.el);
+        }
+
+        componentWillUnmount() {
+            modal.removeChild(this.el);
+        }
+
+        render() {
+            return ReactDOM.createPortal(this.props.children, this.el);
+        }
+    }
+
+    class App extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+              clicks: 0
+            };
+        }
+
+        handleClick = () => {
+            this.setState(state => ({
+                clicks: state.clicks + 1
+            }));
+        };
+
+        render() {
+            return (
+                <div onClick={this.handleClick}>
+                    {this.state.clicks}
+                    <Modal>
+                        <button>Plus 1</button>
+                    </Modal>
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(<App/>, root);
+</script>
+</body>
+</html>
