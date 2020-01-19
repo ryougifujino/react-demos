@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Keys</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const ToDo = props => (
+        <tr>
+            <td>
+                <label>{props.id}</label>
+            </td>
+            <td>
+                <input/>
+            </td>
+            <td>
+                <label>{props.createdAt.toTimeString()}</label>
+            </td>
+        </tr>
+    );
+
+    class ToDoList extends React.Component {
+        constructor() {
+            super();
+            const date = new Date();
+            const todoCounter = 1;
+            this.state = {
+                todoCounter: todoCounter,
+                list: [
+                    {
+                        id: todoCounter,
+                        createdAt: date,
+                    },
+                ],
+            };
+        }
+
+        addToStart() {
+            const date = new Date();
+            const nextId = this.state.todoCounter + 1;
+            const newList = [
+                {id: nextId, createdAt: date},
+                ...this.state.list,
+            ];
+            this.setState({
+                list: newList,
+                todoCounter: nextId,
+            });
+        }
+
+        render() {
+            return (
+                <div>
+                    <code>key=index</code>
+                    <br/>
+                    <button onClick={this.addToStart.bind(this)}>
+                        Add New to Start
+                    </button>
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th/>
+                            <th>created at</th>
+                        </tr>
+                        {this.state.list.map((todo, index) => (
+                            <ToDo key={index} {...todo} />
+                        ))}
+                    </table>
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(
+        <ToDoList/>,
+        document.getElementById('root')
+    );
+
+</script>
+</body>
+</html>
