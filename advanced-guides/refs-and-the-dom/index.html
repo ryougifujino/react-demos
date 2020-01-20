@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Callback Refs</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+
+    class CustomTextInput extends React.Component {
+        constructor(props) {
+            super(props);
+
+            this.textInput = null;
+            this.setTextInputRef = el => {
+                this.textInput = el;
+            };
+
+            this.focusTextInput = () => {
+                this.textInput && this.textInput.focus();
+            };
+        }
+
+        componentDidMount() {
+            this.focusTextInput();
+        }
+
+        render() {
+            return (
+                <div>
+                    <input
+                        type="text"
+                        ref={this.setTextInputRef}
+                    />
+                    <input
+                        type="button"
+                        value="Focus the text input"
+                        onClick={this.focusTextInput}
+                    />
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(<CustomTextInput/>, document.getElementById('root'));
+</script>
+</body>
+</html>
