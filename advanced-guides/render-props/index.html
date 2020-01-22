@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Use Render Props for Cross-Cutting Concerns</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+
+    class Mouse extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {x: 0, y: 0};
+            this.handleMouseMove = this.handleMouseMove.bind(this);
+        }
+
+        handleMouseMove(event) {
+            this.setState({
+                x: event.clientX,
+                y: event.clientY
+            })
+        }
+
+        render() {
+            return (
+                <div style={{ height: '100%' }} onMouseMove={this.handleMouseMove}>
+                    {this.props.render(this.state)}
+                </div>
+            );
+        }
+    }
+
+    function Cat(props) {
+        const {x, y} = props.mouse;
+        return <div>I am cat, and I am at({x}, {y})</div>
+    }
+
+    ReactDOM.render(
+        <Mouse render={state => <Cat mouse={state}/>}/>,
+        document.getElementById('root'));
+</script>
+</body>
+</html>
