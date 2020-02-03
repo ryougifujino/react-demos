@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Building Your Own Hooks</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const {useState, useEffect} = React;
+
+    let statusChangeHandlerList = [];
+    const globalStatus = {isOnline: false};
+    setInterval(() => {
+        if (statusChangeHandlerList.length !== 0) {
+            statusChangeHandlerList.forEach(statusChangeHandler => {
+                statusChangeHandler(globalStatus);
+            });
+            globalStatus.isOnline = !globalStatus.isOnline;
+        }
+    }, 1000);
+    const ChatAPI = {
+        subscribeToFriendStatus(friendID, onStatusChange) {
+            if (friendID === 1 && onStatusChange) {
+                statusChangeHandlerList.push(onStatusChange);
+            }
+        },
+
+        unsubscribeToFriendStatus(friendID, onStatusChange) {
+            if (friendID === 1 && onStatusChange) {
+                statusChangeHandlerList.splice(statusChangeHandlerList.indexOf(onStatusChange), 1);
+            }
+        }
+    };
+
+    function useFriendStatus(friendID) {
+        const [isOnline, setIsOnline] = useState(null);
+
+        function handleStatusChange(status) {
+            setIsOnline(status.isOnline);
+        }
+
+        useEffect(() => {
+            ChatAPI.subscribeToFriendStatus(friendID, handleStatusChange);
+
+            return () => {
+                ChatAPI.unsubscribeToFriendStatus(friendID, handleStatusChange)
+            }
+        });
+
+        return isOnline;
+    }
+
+    function FriendStatus(props) {
+        const isOnline = useFriendStatus(props.friend.id);
+        // noinspection JSConstructorReturnsPrimitive
+        return isOnline ? 'Online' : 'Offline';
+    }
+
+    function FriendStatusColor(props) {
+        const isOnline = useFriendStatus(props.friend.id);
+        // noinspection JSConstructorReturnsPrimitive
+        return isOnline ? 'Red' : 'Gray';
+    }
+
+    function Example() {
+        return (
+            <div>
+                <FriendStatus friend={{id: 1}}/>
+                <FriendStatusColor friend={{id: 1}}/>
+            </div>
+        );
+    }
+
+    ReactDOM.render(<Example/>, document.getElementById('root'));
+</script>
+</body>
+</html>
