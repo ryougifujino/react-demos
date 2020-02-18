@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How to avoid passing callbacks down?</title>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const { useReducer, useContext } = React;
+
+    function todosReducer(todos, action) {
+        switch (action.type) {
+            case 'add':
+                return [...todos, action.text];
+            default:
+                throw new Error();
+        }
+    }
+
+    const TodosDispatch = React.createContext(null);
+
+    function TodosApp() {
+        const [todos, dispatch] = useReducer(todosReducer, []);
+
+        return (
+            <TodosDispatch.Provider value={dispatch}>
+                <DeepTree todos={todos} />
+            </TodosDispatch.Provider>
+        );
+    }
+
+    function DeepTree({ todos }) {
+        return (
+            <div>
+                <DeepChild />
+                <ul>
+                    {todos.map((todo, index) => <li key={index}>{todo}</li>)}
+                </ul>
+            </div>
+        );
+    }
+
+    function DeepChild() {
+        const dispatch = useContext(TodosDispatch);
+
+        function handleClick() {
+            dispatch({ type: 'add', text: 'Hello' });
+        }
+
+        return (
+            <button onClick={handleClick}>Say hello</button>
+        );
+    }
+
+    ReactDOM.render(<TodosApp />, document.getElementById('root'));
+</script>
+</body>
+</html>
